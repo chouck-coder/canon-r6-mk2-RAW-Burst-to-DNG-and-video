@@ -19,7 +19,7 @@
  set MAGICK_OCL_DEVICE=true
  set MAGICK_THREAD_LIMIT=0
 
-goto skip
+
 
  
 
@@ -123,7 +123,7 @@ for %%A in ("%TIFF%\CR6_*_????01.tiff") do (    ::  to create videos only for ro
 	del /Q "!LIST!" 2>nul
 )
 
- :skip
+
  
 
 set "LASTPREFIX="
