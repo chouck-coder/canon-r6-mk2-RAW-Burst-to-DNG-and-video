@@ -5,8 +5,11 @@ To the result video you can add audio, logo, watermark, Intro, and Outro videos.
 [https://www.youtube.com/watch?v=kLdmN_L_hxE](https://youtu.be/wjRXGIVnn04)
 
 You will need only these 3 command-line tools
+
 **ImageMagick** https://imagemagick.org/download/#gsc.tab=0
+
 **ffmpeg** https://ffmpeg.org/download.html
+
 **dnglab** https://github.com/dnglab/dnglab/releases/latest
 
 My flow is the following:
