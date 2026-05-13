@@ -6,11 +6,12 @@ To the result video you can add audio, logo, watermark, Intro, and Outro videos.
 
 You will need only these 3 command-line tools
 
+**dnglab** https://github.com/dnglab/dnglab/releases/latest
+
 **ImageMagick** https://imagemagick.org/download/#gsc.tab=0
 
 **ffmpeg** https://ffmpeg.org/download.html
 
-**dnglab** https://github.com/dnglab/dnglab/releases/latest
 
 My flow is the following:
 1) Insert the SD card into the reader
