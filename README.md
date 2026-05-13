@@ -17,6 +17,6 @@ My flow is the following:
 2) start extract.bat it will convert CR3s rolls to DNGs and TIFFs, placing them on your drive. it will create a nset of individual videos per roll and one that combines ALL rolls. 
 3) cull DNG images in FastStone (Alt+1) in full-screen mode and zoom 175% (this is free tool is lightning fast for culling). you can use Photomechanic or others
 4) Copy selected images DNGs to the output folder
-5) Process them with DxO to create TIFFs with min side of 1080px into the same output folder and final JPGs if needed
+5) Process them with DxO to create TIFFs with min side of 1080px into the same output folder and final JPGs if needed. This is an optional step
 6) run selected.bat to create a set of small videos and one covering all.
    IMPORTANT: big video will include ONLY burst rolls that have at least ONE picture selected at steps 3-4. These will be pause at these SELECTED images for a second (configurable).
