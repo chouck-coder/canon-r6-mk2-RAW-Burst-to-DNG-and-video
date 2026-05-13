@@ -1,7 +1,7 @@
 With a Canon R6 mkII i faced the issue of inconvenience having all RAW Burst frames in one file. 
-So I turned it from an inconvenience to an advantage and scriped a way to automatically create short videos (one per Burst) and combine only valuable session videos into the one big video with nice transition like this 
-
-https://youtu.be/FQ1ZZgAf19I
+So I turned it from an inconvenience to an advantage and scriped a way to automatically create short videos (one per Burst) and combine only valuable session videos into the one big video with nice transitions like these 
+[
+https://youtu.be/FQ1ZZgAf19I](https://youtu.be/kLdmN_L_hxE)
 
 So you extract DNGs from CR3s
 cull it
