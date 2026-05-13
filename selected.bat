@@ -1,5 +1,7 @@
 @echo off
 
+REM example https://youtu.be/FQ1ZZgAf19I
+
 	setlocal enabledelayedexpansion
 
 	set "MAGICK=C:\Program Files\ImageMagick-7.1.2-Q16-HDRI\magick.exe"
@@ -15,6 +17,10 @@
 	 ::  #of frames +1 to pause video, so 29+1 = 1sec at 30 FPS
 	set "COPIES=29"
 	set "BANG=#"
+		set "LOGOP=C:\inbox\RRlogoP.tiff"
+		set "LOGOL=C:\inbox\RRlogoL.tiff"
+		set "AUDIOP=C:\inbox\music\list.txt"
+		set "AUDIOL=C:\inbox\music\list.txt"
 
  set MAGICK_OCL_DEVICE=true
  set MAGICK_THREAD_LIMIT=0
@@ -171,9 +177,6 @@ for %%A in ("%TIFF%\CR6_*_????01.tiff") do (
 
 )
 
-
-
-
  
 set "LIST=%TIFF%\all_list.txt"
 del /Q "!LIST!" 2>nul
@@ -185,18 +188,21 @@ for %%A in ("%TIFF%\CR6_*_????01.tiff") do (
     set "prefix=!file:~0,-7!"
 
     if not "!prefix!"=="!LASTPREFIX!" (
+		echo file '%LOGOP%'>>"!LIST!"	
+		echo file '%LOGOP%'>>"!LIST!"			
  
 			set "LASTPREFIX=!prefix!"
 						for /f "delims=" %%F in ('dir /b /on "%TIFF%\!prefix!_*.tiff"') do (
 					REM	echo file '%TIFF%\%%F'
 				echo file '%TIFF%\%%F'>>"!LIST!"	
 			)
-			
-			
+		echo file '%LOGOP%'>>"!LIST!"	
+		echo file '%LOGOP%'>>"!LIST!"				
 		)
 )		
 			
-		 ffmpeg -y -r 30 -f concat -safe 0 -i "!LIST!" -c:v libx264 -pix_fmt yuv420p "%DIST%\all.mp4"	
+		REM ffmpeg -y -r 30 -f concat -safe 0 -i "!LIST!" -c:v libx264 -pix_fmt yuv420p "%DIST%\all.mp4"	
+		 ffmpeg -y -r 30 -f concat -safe 0 -i "!LIST!" -stream_loop -1 -f concat -safe 0 -i "%AUDIOP%" -c:v libx264 -pix_fmt yuv420p -c:a aac -shortest "%DIST%\all.mp4"
 			
 			
-del /Q "!LIST!" 2>nul
+REM del /Q "!LIST!" 2>nul
