@@ -1,6 +1,6 @@
 @echo off
 
-REM example https://www.youtube.com/watch?v=kLdmN_L_hxE
+REM example https://youtu.be/wjRXGIVnn04
 
 	setlocal enabledelayedexpansion
 
@@ -17,10 +17,15 @@ REM example https://www.youtube.com/watch?v=kLdmN_L_hxE
 	 ::  #of frames +1 to pause video, so 29+1 = 1sec at 30 FPS
 	set "COPIES=29"
 	set "BANG=#"
-		set "LOGOP=C:\inbox\RRlogoP.tiff"
-		set "LOGOL=C:\inbox\RRlogoL.tiff"
+		set "LOGOP=C:\inbox\assets\RR\RRlogoP.tiff"
+		set "LOGOL=C:\inbox\assets\RR\RRlogoL.tiff"
+		set "INTROP=C:\inbox\assets\RR\intro\RR_logoP3.mp4"
+		set "OUTROP=C:\inbox\assets\RR\outro\RR_logoP3.mp4"
+		set "INTROL=C:\inbox\assets\RR\intro\RR_logoL3.mp4"
+		set "OUTROL=C:\inbox\assets\RR\outro\RR_logoL3.mp4"
 		set "AUDIOP=C:\inbox\music\list.txt"
 		set "AUDIOL=C:\inbox\music\list.txt"
+		set "WATERMARK=C:\inbox\assets\RR\RedRush_logo_02_lowrez-01-1.png"
 
  set MAGICK_OCL_DEVICE=true
  set MAGICK_THREAD_LIMIT=0
@@ -177,7 +182,6 @@ for %%A in ("%TIFF%\CR6_*_????01.tiff") do (
 
 )
 
- 
 set "LIST=%TIFF%\all_list.txt"
 del /Q "!LIST!" 2>nul
 
@@ -188,21 +192,39 @@ for %%A in ("%TIFF%\CR6_*_????01.tiff") do (
     set "prefix=!file:~0,-7!"
 
     if not "!prefix!"=="!LASTPREFIX!" (
-		echo file '%LOGOP%'>>"!LIST!"	
-		echo file '%LOGOP%'>>"!LIST!"			
  
 			set "LASTPREFIX=!prefix!"
 						for /f "delims=" %%F in ('dir /b /on "%TIFF%\!prefix!_*.tiff"') do (
-					REM	echo file '%TIFF%\%%F'
 				echo file '%TIFF%\%%F'>>"!LIST!"	
 			)
-		echo file '%LOGOP%'>>"!LIST!"	
-		echo file '%LOGOP%'>>"!LIST!"				
-		)
+			 REM if you need a logo between th clips uncomment these lines. each line will add one logo frame 1/30 of a sec 
+			REM echo file '%LOGOP%'>>"!LIST!"	  
+	)
 )		
-			
-		REM ffmpeg -y -r 30 -f concat -safe 0 -i "!LIST!" -c:v libx264 -pix_fmt yuv420p "%DIST%\all.mp4"	
-		 ffmpeg -y -r 30 -f concat -safe 0 -i "!LIST!" -stream_loop -1 -f concat -safe 0 -i "%AUDIOP%" -c:v libx264 -pix_fmt yuv420p -c:a aac -shortest "%DIST%\all.mp4"
-			
-			
-REM del /Q "!LIST!" 2>nul
+		
+
+	REM without AUDIO ffmpeg -y -r 30 -f concat -safe 0 -i "!LIST!" -c:v libx264 -pix_fmt yuv420p "%DIST%\all.mp4"	
+	REM  with AUDIO 		ffmpeg -y -r 30 -f concat -safe 0 -i "!LIST!" -stream_loop -1 -f concat -safe 0 -i "%AUDIOP%" -c:v libx264 -pix_fmt yuv420p -c:a aac -shortest "%DIST%\all.mp4"
+
+:: iw*0.5:ih*0.5 Watarmark is 50% size of the original file
+
+ set "SCALE=1080:1618"
+
+
+ffmpeg -y ^
+-i "%INTROP%" ^
+-r 30 -f concat -safe 0 -i "!LIST!" ^
+-i "%OUTROP%" ^
+-stream_loop -1 -f concat -safe 0 -i "%AUDIOP%" ^
+-loop 1 -i "%WATERMARK%" ^
+-filter_complex "[0:v]fps=30,scale=!SCALE!:force_original_aspect_ratio=decrease,pad=!SCALE!:(ow-iw)/2:(oh-ih)/2,format=yuv420p,setsar=1[vintro];[1:v]fps=30,scale=!SCALE!:force_original_aspect_ratio=decrease,pad=!SCALE!:(ow-iw)/2:(oh-ih)/2,format=yuv420p,setsar=1[vmain];[2:v]fps=30,scale=!SCALE!:force_original_aspect_ratio=decrease,pad=!SCALE!:(ow-iw)/2:(oh-ih)/2,format=yuv420p,setsar=1[voutro];[vintro][vmain][voutro]concat=n=3:v=1:a=0[base];[4:v]scale=iw*0.5:ih*0.5,format=rgba,colorchannelmixer=aa=0.30[wm];[base][wm]overlay=W-w-20:H-h-20:shortest=1[v]" ^
+-map "[v]" -map 3:a ^
+-c:v libx264 -pix_fmt yuv420p -c:a aac -shortest "%DIST%\all.mp4"
+
+del /Q "!LIST!" 2>nul
+
+
+
+
+
+
