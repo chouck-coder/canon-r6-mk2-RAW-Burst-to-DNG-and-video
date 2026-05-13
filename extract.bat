@@ -11,6 +11,17 @@ set "DIST=%NEW%\out\video"
 set "MAXJOBS=24"
 set RAYON_NUM_THREADS=24
 
+	set "BANG=#"
+		set "LOGOP=C:\inbox\RRlogoP.tiff"
+		set "LOGOL=C:\inbox\RRlogoL.tiff"
+		set "INTROP=C:\inbox\intro.mp4"
+		set "OUTROP=C:\inbox\outro.mp4"
+		set "INTROL=C:\inbox\intro.mp4"
+		set "OUTROL=C:\inbox\outro.mp4"
+		set "AUDIOP=C:\inbox\music\list.txt"
+		set "AUDIOL=C:\inbox\music\list.txt"
+		set "WATERMARK=C:\inbox\watermark.png"
+
  set MAGICK_OCL_DEVICE=true
  set MAGICK_THREAD_LIMIT=0
  setlocal enabledelayedexpansion
