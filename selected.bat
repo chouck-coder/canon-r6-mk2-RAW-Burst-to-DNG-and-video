@@ -1,6 +1,6 @@
 @echo off
 
-REM example https://youtu.be/FQ1ZZgAf19I
+REM example https://www.youtube.com/watch?v=kLdmN_L_hxE
 
 	setlocal enabledelayedexpansion
 
