@@ -14,7 +14,7 @@ You will need only these 3 command-line tools
 
 My flow is the following:
 1) Insert the SD card into the reader
-2) start extract.bat it will convert CR3s rolls to DNGs and TIFFs. it will create a nset of individual videos per roll and one that combines ALL rolls. 
+2) start extract.bat it will convert CR3s rolls to DNGs and TIFFs, placing them on your drive. it will create a nset of individual videos per roll and one that combines ALL rolls. 
 3) cull DNG images in FastStone (Alt+1) in full-screen mode and zoom 175% (this is free tool is lightning fast for culling). you can use Photomechanic or others
 4) Copy selected images DNGs to the output folder
 5) Process them with DxO to create TIFFs with min side of 1080px into the same output folder and final JPGs if needed
