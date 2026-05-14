@@ -6,7 +6,7 @@ set "RAW=%NEW%\raw"
 set "SRC=%RAW%\100EOSR6"
 set "TIFF=%NEW%\tiff"
 set "DIST=%NEW%\out\video"
-
+REM Letters P or L at the end of variables corresponds to the Portrait or Landscape orientation of the file 
 		set "LOGOP=C:\inbox\RRlogoP.tiff"
 		set "LOGOL=C:\inbox\RRlogoL.tiff"
 		set "INTROP=C:\inbox\intro.mp4"
