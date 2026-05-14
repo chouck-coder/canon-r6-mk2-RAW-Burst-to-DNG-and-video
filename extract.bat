@@ -3,15 +3,10 @@ set "MAGICK=C:\Program Files\ImageMagick-7.1.2-Q16-HDRI\magick.exe"
 set "SD=D:\DCIM"
 set "NEW=C:\inbox\New"
 set "RAW=%NEW%\raw"
-set "SRC=%RAW%\DCIM\100EOSR6"
+set "SRC=%RAW%\100EOSR6"
 set "TIFF=%NEW%\tiff"
 set "DIST=%NEW%\out\video"
 
- ::  #of processing Cores in your CPU
-set "MAXJOBS=24"
-set RAYON_NUM_THREADS=24
-
-	set "BANG=#"
 		set "LOGOP=C:\inbox\RRlogoP.tiff"
 		set "LOGOL=C:\inbox\RRlogoL.tiff"
 		set "INTROP=C:\inbox\intro.mp4"
@@ -22,14 +17,21 @@ set RAYON_NUM_THREADS=24
 		set "AUDIOL=C:\inbox\music\list.txt"
 		set "WATERMARK=C:\inbox\watermark.png"
 
+
+ ::  #of processing Cores in your CPU
+set "MAXJOBS=%NUMBER_OF_PROCESSORS%"
+set "RAYON_NUM_THREADS=%NUMBER_OF_PROCESSORS%"
+set "BANG=#"
+	
  set MAGICK_OCL_DEVICE=true
  set MAGICK_THREAD_LIMIT=0
  setlocal enabledelayedexpansion
  
  ::  Step 1 Extract RAWs frames from CR3s 
 C:\PF\RollExtractor\dnglab.exe convert --image-index all -r --embed-raw false --crop activearea --override %SD% %RAW%
-robocopy "%SD%" "%NEW%" /S /MOVE /XF *.cr3
-robocopy "%SD%" "%NEW%" *.JPG *.jpg *.MP4 *.mp4 /S /MOV
+
+REM robocopy "%SD%" "%NEW%" /S /MOVE /XF *.cr3
+REM robocopy "%SD%" "%NEW%" *.JPG *.jpg *.MP4 *.mp4 /S /MOV
 
 
 
