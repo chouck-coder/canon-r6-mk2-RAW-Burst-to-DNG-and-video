@@ -27,3 +27,5 @@ Suggested flow is the following:
 6) Process them with DxO to create TIFFs with min side of 1080px into the same output folder and final JPGs if needed. This is an optional step
 7) Run **selected.bat** to create a set of small videos and one covering all.
    IMPORTANT: big video will include ONLY burst rolls that have at least ONE picture selected at steps 3-4. These will be pause at these SELECTED images for a second (configurable).
+
+   NOTE: Your antivirus or Defender might not like BAT files manipulating local files. Send it to hell. Files are safe. 
