@@ -6,17 +6,6 @@ set "RAW=%NEW%\raw"
 set "SRC=%RAW%\100EOSR6"
 set "TIFF=%NEW%\tiff"
 set "DIST=%NEW%\out\video"
-REM Letters P or L at the end of variables corresponds to the Portrait or Landscape orientation of the file 
-		set "LOGOP=C:\inbox\RRlogoP.tiff"
-		set "LOGOL=C:\inbox\RRlogoL.tiff"
-		set "INTROP=C:\inbox\intro.mp4"
-		set "OUTROP=C:\inbox\outro.mp4"
-		set "INTROL=C:\inbox\intro.mp4"
-		set "OUTROL=C:\inbox\outro.mp4"
-		set "AUDIOP=C:\inbox\music\list.txt"
-		set "AUDIOL=C:\inbox\music\list.txt"
-		set "WATERMARK=C:\inbox\watermark.png"
-
 
  ::  #of processing Cores in your CPU
 set "MAXJOBS=%NUMBER_OF_PROCESSORS%"
