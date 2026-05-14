@@ -12,7 +12,7 @@ You will need only these 3 command-line tools
 
 **ffmpeg** https://ffmpeg.org/download.html
 
-How to use (Windows only): 
+How to use (**Windows only**): 
 
 Initial setup: Download extract.bat and selected.bat to your local folder. Edit variables for your folders and files at the top of both BAT files.
 
