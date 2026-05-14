@@ -1,24 +1,24 @@
 @echo off
+setlocal
 
 REM example https://youtu.be/wjRXGIVnn04
 
-	setlocal enabledelayedexpansion
+	setlocal enabledelayedexpansion 
 
 	set "MAGICK=C:\Program Files\ImageMagick-7.1.2-Q16-HDRI\magick.exe"
 	set "NEW=C:\inbox\New"
 	set "RAW=%NEW%\raw"
 	set "SRC=%NEW%\out"
-::  set "SRC=C:\inbox\New\out\test"
 	set "TIFF=%NEW%\tiff"
-::  set "TIFF=C:\inbox\New\out\test"
 	set "DIST=%NEW%\out\video"
-	 ::  #of processing Cores in your CPU
-	set "MAXJOBS=24"
+
 	 ::  #of frames +1 to pause video, so 29+1 = 1sec at 30 FPS
 	set "COPIES=29"
-	set "BANG=#"
+
 		set "LOGOP=C:\inbox\assets\RR\RRlogoP.tiff"
 		set "LOGOL=C:\inbox\assets\RR\RRlogoL.tiff"
+		REM if you need a logo between the clips, uncomment these lines. Each line will add one logo frame 1/30 of a sec . 0 is NO logo
+		set "LOGOFRAMES=0"		 
 		set "INTROP=C:\inbox\assets\RR\intro\RR_logoP3.mp4"
 		set "OUTROP=C:\inbox\assets\RR\outro\RR_logoP3.mp4"
 		set "INTROL=C:\inbox\assets\RR\intro\RR_logoL3.mp4"
@@ -29,9 +29,12 @@ REM example https://youtu.be/wjRXGIVnn04
 
  set MAGICK_OCL_DEVICE=true
  set MAGICK_THREAD_LIMIT=0
-
-
-
+	 ::  #of processing Cores in your CPU
+set "MAXJOBS=%NUMBER_OF_PROCESSORS%"
+	set "BANG=#"
+	
+goto skip
+:skip	
  
 
 
@@ -118,7 +121,7 @@ move /Y "%SRC%\*.tiff" "%TIFF%\"
  
 
 
-for %%A in ("%TIFF%\CR6_*_????01.tiff") do (    ::  to create videos only for rolls with the selected picture use CR6_*_?????1.tiff , to create for ALL use CR6_*_000000.tiff
+for %%A in ("%TIFF%\CR6_*_0???01.tiff") do (    ::  to create videos only for rolls with the selected picture use CR6_*_?????1.tiff , to create for ALL use CR6_*_000000.tiff
     set "file=%%~nA"
     set "prefix=!file:~0,-7!"
 
@@ -139,7 +142,7 @@ for %%A in ("%TIFF%\CR6_*_????01.tiff") do (    ::  to create videos only for ro
 
 set "LASTPREFIX="
 
-for %%A in ("%TIFF%\CR6_*_????01.tiff") do (  
+for %%A in ("%TIFF%\CR6_*_0???01.tiff") do (  
     set "file=%%~nA"
     set "prefix=!file:~0,-7!"
 
@@ -182,23 +185,48 @@ for %%A in ("%TIFF%\CR6_*_????01.tiff") do (
 
 )
 
-set "LIST=%TIFF%\all_list.txt"
-del /Q "!LIST!" 2>nul
+
+
+set "LISTP=%TIFF%\all_listP.txt"
+del /Q "!LISTP!" 2>nul
+set "LISTL=%TIFF%\all_listL.txt"
+del /Q "!LISTL!" 2>nul
 
 set "LASTPREFIX="
 
-for %%A in ("%TIFF%\CR6_*_????01.tiff") do (  
-    set "file=%%~nA"
+for %%X in ("%TIFF%\CR6_*_0???01.tiff") do (  
+    set "file=%%~nX"
     set "prefix=!file:~0,-7!"
+
 
     if not "!prefix!"=="!LASTPREFIX!" (
  
 			set "LASTPREFIX=!prefix!"
 						for /f "delims=" %%F in ('dir /b /on "%TIFF%\!prefix!_*.tiff"') do (
-				echo file '%TIFF%\%%F'>>"!LIST!"	
+
+							for /f "tokens=1,2" %%A in ('magick identify -format "%%w %%h" "%TIFF%\%%F"') do (
+								set "W=%%A"
+								set "H=%%B"
+							)
+
+							if !H! GTR !W! ( 
+								echo file '%TIFF%\%%F'>>"!LISTP!"	
+							) else if !W! GTR !H! (
+								echo file '%TIFF%\%%F'>>"!LISTL!"	
+							) else (
+								echo Square IMAGE
+							)
 			)
-			 REM if you need a logo between th clips uncomment these lines. each line will add one logo frame 1/30 of a sec 
-			REM echo file '%LOGOP%'>>"!LIST!"	  
+			for /L %%I in (1,1,%LOGOFRAMES%) do (
+							if !H! GTR !W! ( 
+								echo file '%LOGOP%'>>"!LISTP!"
+							) else if !W! GTR !H! (
+								echo file '%LOGOL%'>>"!LISTL!"
+							) else (
+								echo Square IMAGE
+							)
+			)
+
 	)
 )		
 		
@@ -209,19 +237,40 @@ for %%A in ("%TIFF%\CR6_*_????01.tiff") do (
 :: iw*0.5:ih*0.5 Watarmark is 50% size of the original file
 
  set "SCALE=1080:1618"
+ set "ORIENT=P"
+set "INTRO=%INTROP%"
+set "OUTRO=%OUTROP%"
+set "AUDIO=%AUDIOP%"
+set "LIST=%LISTP%"
+call :generateVideo
 
+ set "SCALE=1618:1080"
+ set "ORIENT=L"
+set "INTRO=%INTROL%"
+set "OUTRO=%OUTROL%"
+set "AUDIO=%AUDIOL%"
+set "LIST=%LISTL%"
+call :generateVideo
+
+
+exit /b
+
+:generateVideo
 
 ffmpeg -y ^
--i "%INTROP%" ^
+-i "%INTRO%" ^
 -r 30 -f concat -safe 0 -i "!LIST!" ^
--i "%OUTROP%" ^
--stream_loop -1 -f concat -safe 0 -i "%AUDIOP%" ^
+-i "%OUTRO%" ^
+-stream_loop -1 -f concat -safe 0 -i "%AUDIO%" ^
 -loop 1 -i "%WATERMARK%" ^
 -filter_complex "[0:v]fps=30,scale=!SCALE!:force_original_aspect_ratio=decrease,pad=!SCALE!:(ow-iw)/2:(oh-ih)/2,format=yuv420p,setsar=1[vintro];[1:v]fps=30,scale=!SCALE!:force_original_aspect_ratio=decrease,pad=!SCALE!:(ow-iw)/2:(oh-ih)/2,format=yuv420p,setsar=1[vmain];[2:v]fps=30,scale=!SCALE!:force_original_aspect_ratio=decrease,pad=!SCALE!:(ow-iw)/2:(oh-ih)/2,format=yuv420p,setsar=1[voutro];[vintro][vmain][voutro]concat=n=3:v=1:a=0[base];[4:v]scale=iw*0.5:ih*0.5,format=rgba,colorchannelmixer=aa=0.30[wm];[base][wm]overlay=W-w-20:H-h-20:shortest=1[v]" ^
 -map "[v]" -map 3:a ^
--c:v libx264 -pix_fmt yuv420p -c:a aac -shortest "%DIST%\all.mp4"
+-c:v libx264 -pix_fmt yuv420p -c:a aac -shortest "%DIST%\all!ORIENT!.mp4"
 
 del /Q "!LIST!" 2>nul
+
+exit /b
+
 
 
 
