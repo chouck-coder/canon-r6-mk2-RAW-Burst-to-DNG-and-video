@@ -15,6 +15,7 @@ REM example https://youtu.be/wjRXGIVnn04
 	 ::  #of frames +1 to pause video, so 29+1 = 1sec at 30 FPS
 	set "COPIES=29"
 REM Letters P or L at the end of variables correspond to the Portrait or Landscape orientation of the file 
+REM Logo files MUST be in TIFF format
 		set "LOGOP=C:\inbox\assets\RR\RRlogoP.tiff"
 		set "LOGOL=C:\inbox\assets\RR\RRlogoL.tiff"
 		REM if you need a logo between the clips, uncomment these lines. Each line will add one logo frame 1/30 of a sec . 0 is NO logo
