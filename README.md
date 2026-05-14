@@ -14,7 +14,7 @@ You will need only these 3 command-line tools
 
 How to use (**Windows only**): 
 
-Initial setup: Download extract.bat and selected.bat to your local folder. Edit variables for your folders and files at the top of both BAT files.
+Initial setup: Download extract.bat and selected.bat to your local folder. Get and install the three executables from above. Edit variables for your folders and files at the top of both BAT files.
 
 Suggested flow is the following:
 
