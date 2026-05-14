@@ -12,8 +12,10 @@ You will need only these 3 command-line tools
 
 **ffmpeg** https://ffmpeg.org/download.html
 
+How to use (Windows only): 
+Initial setup: Download extract.bat and selected.bat to your local folder. Edit variables for your folders and files at the top of both BAT files.
 
-My flow is the following:
+Suggested flow is the following:
 
 0) Before shooting, set proper custom white balance in your camera! And update it if the location or light changed. Yes you shooting RAW , yes you can change it later, but you won't change it for all the thousands of frames you use for the videos. 
 1) Clean local drive folders from the previous session results. ( see path as RAW, SRC, TIFF variables in BAT files)
