@@ -19,9 +19,9 @@ REM Logo files MUST be in TIFF format
 		set "LOGOP=C:\inbox\assets\RR\RRlogoP.tiff"
 		set "LOGOL=C:\inbox\assets\RR\RRlogoL.tiff"
 		REM if you need a logo between the clips, uncomment these lines. Each line will add one logo frame 1/30 of a sec . 0 is NO logo
-		set "LOGOFRAMES=0"		 
-		set "INTROP=C:\inbox\assets\RR\intro\RR_logoP3.mp4"
-		set "OUTROP=C:\inbox\assets\RR\outro\RR_logoP3.mp4"
+		set "LOGOFRAMES=0"		 	 
+		set "INTROP=C:\inbox\assets\RR\intro\RR_logoP00.mp4"
+		set "OUTROP=C:\inbox\assets\RR\outro\RR_logoP1.mp4"
 		set "INTROL=C:\inbox\assets\RR\intro\RR_logoL3.mp4"
 		set "OUTROL=C:\inbox\assets\RR\outro\RR_logoL3.mp4"
 		set "AUDIOP=C:\inbox\music\list.txt"
@@ -35,14 +35,15 @@ set "MAXJOBS=%NUMBER_OF_PROCESSORS%"
 	set "BANG=#"
 	
 goto skip
-:skip	
+ :skip
  
 
-
+REM DxO fenerates .TIF files , and we better have TIFF
 ren "%SRC%\*.tif" *.tiff
 
 
-for %%F in ("%SRC%\CR6_*_*.dng") do (
+REM for selected images (frames) if we dotn get TIFs generated already we take DNGs and generate TIFs for the coming videos. We do use all CPU cores so executing paralel threads 
+for %%F in ("%SRC%\*_*_*.dng") do (
     if not exist "%SRC%\%%~nF.tiff" (
         echo TIFF missing, converting: %%~nxF
         call :waitslot
@@ -76,7 +77,9 @@ if !COUNT! GTR 0 (
 exit /b
 
 :nextcommands
-for %%F in ("%SRC%\CR6_*_????.tiff") do (
+
+REM
+for %%F in ("%SRC%\*_*_????.tiff") do (
   for /f "tokens=1,2,3 delims=_" %%A in ("%%~nF") do (
     ren "%%F" "%%A_%%B_%%C00%%~xF"
   )
@@ -84,8 +87,8 @@ for %%F in ("%SRC%\CR6_*_????.tiff") do (
 
 
 
-
-for %%F in ("%SRC%\CR6_*_??????.tiff") do (
+REM we create N copies of the selected frames so it is paused in the video
+for %%F in ("%SRC%\*_*_??????.tiff") do (
     set "full=%%~fF"
     set "name=%%~nF"
     set "ext=%%~xF"
@@ -115,14 +118,14 @@ for %%F in ("%SRC%\CR6_*_??????.tiff") do (
     )
 )
 
-
+REM move all to the folder with other frames 
 move /Y "%SRC%\*.tiff" "%TIFF%\"
 
-  ::  Step 4 Create MP4 pause videos from extracted  TIFFs 
+  ::  Step 4 Create individual MP4 pause videos from extracted  TIFFs 
  
 
 
-for %%A in ("%TIFF%\CR6_*_0???01.tiff") do (    ::  to create videos only for rolls with the selected picture use CR6_*_?????1.tiff , to create for ALL use CR6_*_000000.tiff
+for %%A in ("%TIFF%\*_*_0???01.tiff") do (    ::  to create videos only for rolls with the selected picture use CR6_*_?????1.tiff , to create for ALL use CR6_*_000000.tiff
     set "file=%%~nA"
     set "prefix=!file:~0,-7!"
 
@@ -139,11 +142,11 @@ for %%A in ("%TIFF%\CR6_*_0???01.tiff") do (    ::  to create videos only for ro
 )
 
 
- 
 
+REM Create transition effects Dodging pictures in and out for each clip
 set "LASTPREFIX="
 
-for %%A in ("%TIFF%\CR6_*_0???01.tiff") do (  
+for %%A in ("%TIFF%\*_*_0???01.tiff") do (  
     set "file=%%~nA"
     set "prefix=!file:~0,-7!"
 
@@ -179,7 +182,7 @@ for %%A in ("%TIFF%\CR6_*_0???01.tiff") do (
 				set /a "XXX=100 + (%%I-1) * 200 / 4"
 				
 				echo Creating: !FILEPREFIX!!NEWNUM!.tiff	!XXX!
-				 "%MAGICK%" "%TIFF%\!LASTFILE!" ^( +clone -colorspace gray -negate -blur 0x5 -channel A -evaluate multiply 1 ^) -compose ColorDodge -composite -modulate !XXX!,100,100 "%TIFF%\!FILEPREFIX!!NEWNUM!.tiff"
+				"%MAGICK%" "%TIFF%\!LASTFILE!" ^( +clone -colorspace gray -negate -blur 0x5 -channel A -evaluate multiply 1 ^) -compose ColorDodge -composite -modulate !XXX!,100,100 "%TIFF%\!FILEPREFIX!!NEWNUM!.tiff"
 		 )
 		
 	)
@@ -187,15 +190,21 @@ for %%A in ("%TIFF%\CR6_*_0???01.tiff") do (
 )
 
 
+REM generate Final merge videos one for Portait pictures and one fro Landscape
+echo Generating list for videos...
 
 set "LISTP=%TIFF%\all_listP.txt"
-del /Q "!LISTP!" 2>nul
+if defined LISTP if exist "!LISTP!" (
+    del /Q /F "!LISTP!" 2>nul
+)
 set "LISTL=%TIFF%\all_listL.txt"
-del /Q "!LISTL!" 2>nul
+if defined LISTL if exist "!LISTL!" (
+    del /Q /F "!LISTL!" 2>nul
+)
 
 set "LASTPREFIX="
 
-for %%X in ("%TIFF%\CR6_*_0???01.tiff") do (  
+for %%X in ("%TIFF%\*_*_0???01.tiff") do (  
     set "file=%%~nX"
     set "prefix=!file:~0,-7!"
 
@@ -204,25 +213,36 @@ for %%X in ("%TIFF%\CR6_*_0???01.tiff") do (
  
 			set "LASTPREFIX=!prefix!"
 						for /f "delims=" %%F in ('dir /b /on "%TIFF%\!prefix!_*.tiff"') do (
-
-							for /f "tokens=1,2" %%A in ('magick identify -format "%%w %%h" "%TIFF%\%%F"') do (
-								set "W=%%A"
-								set "H=%%B"
-							)
+							set "W=0"
+							REM for /f "tokens=1,2" %%A in ('magick identify -quiet -format "%%w %%h" "%TIFF%\%%F"') do (
+							
+							REM	set "W=%%A"
+							REM	set "H=%%B"
+							REM )
 
 							if !H! GTR !W! ( 
 								echo file '%TIFF%\%%F'>>"!LISTP!"	
+								REM echo file duration 0.0333333>>"!LISTP!"	
 							) else if !W! GTR !H! (
 								echo file '%TIFF%\%%F'>>"!LISTL!"	
+								REM echo duration 0.0333333>>"!LISTL!"	
 							) else (
 								echo Square IMAGE
+								echo file '%TIFF%\%%F'>>"!LISTP!"	
+								echo duration 0.0333333>>"!LISTP!"	
+							)
+							if "%W%"=="0" (
+								echo file '%TIFF%\%%F'>>"!LISTP!"	
+								REM echo duration 0.0333333>>"!LISTP!"	
 							)
 			)
 			for /L %%I in (1,1,%LOGOFRAMES%) do (
 							if !H! GTR !W! ( 
 								echo file '%LOGOP%'>>"!LISTP!"
+								echo duration 0.0333333>>"!LISTP!"	
 							) else if !W! GTR !H! (
 								echo file '%LOGOL%'>>"!LISTL!"
+								REM echo duration 0.0333333>>"!LISTL!"	
 							) else (
 								echo Square IMAGE
 							)
@@ -230,12 +250,14 @@ for %%X in ("%TIFF%\CR6_*_0???01.tiff") do (
 
 	)
 )		
-		
+
+
 
 	REM without AUDIO ffmpeg -y -r 30 -f concat -safe 0 -i "!LIST!" -c:v libx264 -pix_fmt yuv420p "%DIST%\all.mp4"	
 	REM  with AUDIO 		ffmpeg -y -r 30 -f concat -safe 0 -i "!LIST!" -stream_loop -1 -f concat -safe 0 -i "%AUDIOP%" -c:v libx264 -pix_fmt yuv420p -c:a aac -shortest "%DIST%\all.mp4"
 
-:: iw*0.5:ih*0.5 Watarmark is 50% size of the original file
+
+
 
  set "SCALE=1080:1618"
  set "ORIENT=P"
@@ -245,6 +267,8 @@ set "AUDIO=%AUDIOP%"
 set "LIST=%LISTP%"
 call :generateVideo
 
+
+
  set "SCALE=1618:1080"
  set "ORIENT=L"
 set "INTRO=%INTROL%"
@@ -253,10 +277,14 @@ set "AUDIO=%AUDIOL%"
 set "LIST=%LISTL%"
 call :generateVideo
 
-
+pause 
 exit /b
 
 :generateVideo
+
+set /a RAND6=%RANDOM% %% 900000 + 100000
+:: iw*0.5:ih*0.5 Watarmark is 50% size of the original file
+REM -r 30 -f concat -safe 0 -i "!LIST!" ^
 
 ffmpeg -y ^
 -i "%INTRO%" ^
@@ -266,11 +294,17 @@ ffmpeg -y ^
 -loop 1 -i "%WATERMARK%" ^
 -filter_complex "[0:v]fps=30,scale=!SCALE!:force_original_aspect_ratio=decrease,pad=!SCALE!:(ow-iw)/2:(oh-ih)/2,format=yuv420p,setsar=1[vintro];[1:v]fps=30,scale=!SCALE!:force_original_aspect_ratio=decrease,pad=!SCALE!:(ow-iw)/2:(oh-ih)/2,format=yuv420p,setsar=1[vmain];[2:v]fps=30,scale=!SCALE!:force_original_aspect_ratio=decrease,pad=!SCALE!:(ow-iw)/2:(oh-ih)/2,format=yuv420p,setsar=1[voutro];[vintro][vmain][voutro]concat=n=3:v=1:a=0[base];[4:v]scale=iw*0.5:ih*0.5,format=rgba,colorchannelmixer=aa=0.30[wm];[base][wm]overlay=W-w-20:H-h-20:shortest=1[v]" ^
 -map "[v]" -map 3:a ^
--c:v libx264 -pix_fmt yuv420p -c:a aac -shortest "%DIST%\all!ORIENT!.mp4"
+-c:v libx264 -pix_fmt yuv420p -c:a aac -shortest "%DIST%\all!ORIENT!-%RAND6%.mp4"
 
-del /Q "!LIST!" 2>nul
+if defined LIST if exist "!LIST!" (
+    del /Q /F "!LIST!" 2>nul
+)
 
 exit /b
+
+
+
+
 
 
 
